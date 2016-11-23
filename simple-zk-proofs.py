@@ -49,7 +49,7 @@ def random_oracle_string_to_Zp(s):
 def sha2_to_long(seed):
     # BUG: we should replace this with return uint256_from_str(Hash(seed))
     from Crypto.Hash import SHA256
-    return long(SHA256.new(seed).hexdigest(),16)
+    return int(SHA256.new(seed.encode('utf-8')).hexdigest(),16)
 
 # This easy sqrt works for this curve, not necessarily all curves
 # https://en.wikipedia.org/wiki/Quadratic_residue#Prime_or_prime_power_modulus
