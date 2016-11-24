@@ -38,6 +38,8 @@ class Point(object):
    def __repr__(self):
       return str(self)
 
+   def __hash__(self):
+       return hash(tuple([self.x.n, self.y.n]))
 
    def __neg__(self):
       return Point(self.curve, self.x, -self.y - self.curve.a1*self.x - self.curve.a3)
@@ -132,6 +134,9 @@ class Ideal(Point):
 
    def __repr__(self):
       return "Ideal"
+
+   def __hash__(self):
+       return hash(tuple([0, 0]))
 
    def __add__(self, Q):
       if self.curve != Q.curve:

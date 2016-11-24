@@ -5,6 +5,7 @@ import random
 import logging
 from curveParams import G, order
 from elgamal import elgamal_encrypt, elgamal_decrypt
+from utils import init_baby_giant, baby_giant
 
 def setup_logging(logdir, loglevel=logging.DEBUG):
     global logger
@@ -26,6 +27,12 @@ def setup_logging(logdir, loglevel=logging.DEBUG):
 
     logger.info("Logger initialized.")
 
+def init():
+    """
+    Initializations
+    """
+    init_baby_giant(100) # upper limit = 100
+
 def simpleElGamal():
     # generate secret-key
     sk = random.randint(0, order) 
@@ -40,16 +47,20 @@ def simpleElGamal():
     m_point = m * G
 
     (c1, c2) = elgamal_encrypt(pk, r, m_point)
-    logger.info("ElGamal ciphertext {}, {}".format(c1,c2)) 
+    logger.info("ElGamal ciphertext: {}, {}".format(c1,c2)) 
 
-    plaintext = elgamal_decrypt(sk, c1, c2)
-    logger.info("ElGamal decrypted plaintext {}".format(plaintext))
+    m_point_decrypt = elgamal_decrypt(sk, c1, c2)
+    logger.info("ElGamal decrypted: {}".format(m_point_decrypt))
 
-    # plaintext recovered from ElGamal is a point on the curve. We need to solve
+    # data recovered from ElGamal is a point on the curve. We need to solve
     # the discrete log problem to get the message - exhaustive search or
     # Baby/Giant
-    assert plaintext == m_point
+    assert m_point_decrypt == m_point
+
+    plaintext = baby_giant(m_point_decrypt)
+    print("Plaintext: {}".format(plaintext))
 
 if __name__=="__main__":
     setup_logging('/tmp/logs')
+    init()
     simpleElGamal()
