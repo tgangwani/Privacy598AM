@@ -131,6 +131,9 @@ class Ideal(Point):
 
    def __neg__(self):
       return self
+   
+   def __str__(self):
+      return "(%r, %r)" % (0, 0)
 
    def __repr__(self):
       return "Ideal"
