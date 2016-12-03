@@ -9,16 +9,17 @@ class Ledger(object):
     def phase(self, s):
         if (s == 'c'):
             self.cur_phase = 'c'
-            self.pk = {}
-            self.pk_list = {}
+            self.h = {}
             self.h_list = {}
+            self.pk_list = {}
             self.encrypted_g1 = {}
             self.encrypted_g2 = {}
             self.encrypted_sb = {}
-            self.pk_list_sb = {}
+            self.encrypted_w = {}
             self.zkp1_dict = {}
             self.zkp2_dict = {}
             self.zkp3_dict = {}
+            self.zkp4_dict = {}
             return 1
         if (s == 'p' and self.cur_phase == 'c'):
             self.cur_phase = 'p'
@@ -37,20 +38,27 @@ class Ledger(object):
         self.zkp1_dict[uid] = zkp_discretelog
         print("ledger: {} commited zkp for discrete log".format(uid))
 
-    def zkp2(self, pk, h_list, encrypted_g1, encrypted_g2, zkp_dhtuple, uid):
+    def zkp2(self, h, h_list, encrypted_g1, encrypted_g2, zkp_dhtuple, uid):
         if (self.cur_phase != 'p'):
             return 0
-        self.pk[uid] = pk
+        self.h[uid] = h
         self.h_list[uid] = h_list
         self.encrypted_g1[uid] = encrypted_g1
         self.encrypted_g2[uid] = encrypted_g2
         self.zkp2_dict[uid] = zkp_dhtuple
         print("ledger: {} commited zkp for dhtuple".format(uid))
 
-    def zkp3(self, encrypted_sb, pk_list_sb, zkp01, uid):
+    def zkp3(self, encrypted_sb, zkp01, uid):
         if (self.cur_phase != 'p'):
             return 0
         self.encrypted_sb[uid] = encrypted_sb
-        self.pk_list_sb[uid] = pk_list_sb
         self.zkp3_dict[uid] = zkp01
         print("ledger: {} commited zkp01".format(uid))
+
+    def zkp4(self, encrypted_w, zkp_square, uid):
+        if (self.cur_phase != 'p'):
+            return 0
+        self.encrypted_w[uid] = encrypted_w
+        self.zkp4_dict[uid] = zkp_square
+        print("ledger: {} commited zkp square".format(uid))
+
