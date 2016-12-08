@@ -4,25 +4,23 @@
 import logging
 import sys, os
 import math
+import random
 from curveParams import G, I, order
 from elgamal import elgamal_encrypt
-from zkplib import oneOutOfTwo as zkp_oneOutOfTwo                                    
+from zkplib import oneOutOfTwo as zkp_oneOutOfTwo, dhTuple as zkp_dhTuple                                
 
 logger = logging.getLogger('Main.zkp_range')
 
 def gen_prf(*args, **kwargs) -> 'dict':
     """
-    Generate proof that message \in {0,1}
-    Positional args : (c1, c2) - ElGamal encryption of message
-    Keyword args - as below
+    Generate proof
     """
 
     try:
-        x = args[0]
-        y = args[1]
+        (x,y) = args[0]
         pid = kwargs['pid']
         v = kwargs['message']
-        secrets = kwargs['secrets']
+        secret = kwargs['secret']
         pk = kwargs['pubkey']
         b = kwargs['bound']
     except:
@@ -48,36 +46,45 @@ def gen_prf(*args, **kwargs) -> 'dict':
     if L > LB:
     	print('Range Proof: input value {} exceeds bound {}'.format(v, b))
     	sys.exit(1)
-    if len(secrets) < L:
-    	print('Not enough secrets provided for proof: L = {}, number_of_secrets = {}'.format(L,len(secrets)))
-    	sys.exit(1)
 
     vb_enc = []
     vb_prf = []
+    rsum = 0 # the randomness for the weighted sum
+    # generate 1 out of 2 proofs
     for l in range(L):
     	bit = vb[l]
-    	cbit = elgamal_encrypt(pk, secrets[l], bit * G)
+    	r = random.randint(0, order)
+    	rsum += 2**(L-1-l)*r
+    	cbit = elgamal_encrypt(pk, r, bit * G)
     	(c1, c2) = cbit
-    	prf = zkp_oneOutOfTwo.gen_prf(c1, c2, pid = pid, message = bit, secret = secrets[l], pubkey = pk)
+    	prf = zkp_oneOutOfTwo.gen_prf(c1, c2, pid = pid, message = bit, secret = r, pubkey = pk)
     	vb_enc.append(cbit)
     	vb_prf.append(prf)
-    return {'zkp01':vb_prf, 'encrypted_bits':vb_enc} 
+
+    # generate dhtuple proof
+    c1sum = I
+    c2sum = I
+    for l in range(L):
+    	c1sum += 2**(L - 1 - l)*vb_enc[l][0]
+    	c2sum += 2**(L - 1 - l)*vb_enc[l][1]
+    dhtuple = (G, pk, x - c1sum, y - c2sum)
+    dhtuple_prf = zkp_dhTuple.gen_prf(dhtuple, pid=pid, secret=secret - rsum)
+
+    return {'zkp01':vb_prf, 'zkp_dhtuple':dhtuple_prf, 'encrypted_bits':vb_enc} 
 
 def verify_prf(*args, **kwargs) -> 'bool':
     """
-    Verification of ZKP that message \in {0,1}
-    Positional args : (c1, c2) - ElGamal encryption of message
-    Keyword args - as below
+    Verification of ZKP 
     """
 
     try:
-        x = args[0]
-        y = args[1]
+        (x,y) = args[0]
         pid = kwargs['pid']
         pk = kwargs['pubkey']
         b = kwargs['bound']
         vb_prf = kwargs['zkp01']
         vb_enc = kwargs['encrypted_bits']
+        dhtuple_prf = kwargs['zkp_dhtuple']
     except:
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -99,20 +106,19 @@ def verify_prf(*args, **kwargs) -> 'bool':
     for l in range(L):
     	(c1, c2) = vb_enc[l]
     	if (not zkp_oneOutOfTwo.verify_prf(c1, c2, pid = pid, pubkey = pk, **vb_prf[l])):
-    		print("{}: ZKP one out of two failed!".format(pid))
+    		print("{}: ZKP one out of two verification failed!".format(pid))
     		return False
 
     # verify that the sum of bits equal to the encrypted value 
-    vb_sum = I
-    x_sum = I
+    c1sum = I
+    c2sum = I
     for l in range(L):
-    	x_sum += 2**(L - 1 - l)*vb_enc[l][0]
-    	vb_sum += 2**(L - 1 - l)*vb_enc[l][1]
-    if (x != x_sum):
-    	print('{}: Check sum failed for the first element in Elgamal'.format(pid))
-    	return False
-    if (y != vb_sum):
-    	print('{}: Check sum failed for the second element in Elgamal'.format(pid))
+    	c1sum += 2**(L - 1 - l)*vb_enc[l][0]
+    	c2sum += 2**(L - 1 - l)*vb_enc[l][1]
+
+    dhtuple = (G, pk, x - c1sum, y - c2sum)
+    if (not zkp_dhTuple.verify_prf(dhtuple, pid = pid, **dhtuple_prf)):
+    	print("{}: ZKP dhtuple verification failed!".format(pid))
     	return False
 
     # ZKP successful verification
