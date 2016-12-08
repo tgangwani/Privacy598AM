@@ -1,0 +1,1 @@
+This folder contains old code for ZKP on L2 bound.
