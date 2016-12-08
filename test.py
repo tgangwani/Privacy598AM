@@ -6,16 +6,17 @@ from zorro import Zorro
 
 def test_app():
     l = Ledger()
-    g1 = [2, 3, 3, 0, 0, 0]
-    g2 = [1, 2, 2, 0, 0, 0]
-    g3 = [1, 1, 1, 0, 2, 0]
-    g_range = 3   # range of each element 
-    g_length = 6    # length of the vector
+    g1 = [2, 3, 3]
+    g2 = [1, 2, 2]
+    g3 = [1, 1, 1]
+    gmax = 5   # range of each element 
+    g_length = 3    # length of the vector
+    total_bound = 10 # range of the vector
 
     # Phase 0: initiate
-    z1 = Zorro(l, 0, g_length, g_range)
-    z2 = Zorro(l, 1, g_length, g_range)
-    z3 = Zorro(l, 2, g_length, g_range)
+    z1 = Zorro(l, 0, g_length, gmax, total_bound)
+    z2 = Zorro(l, 1, g_length, gmax, total_bound)
+    z3 = Zorro(l, 2, g_length, gmax, total_bound)
 
     print("Phase 1: commit...")
     # Phase 1: commit 

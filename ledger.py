@@ -14,12 +14,10 @@ class Ledger(object):
             self.pk_list = {}
             self.encrypted_g1 = {}
             self.encrypted_g2 = {}
-            self.encrypted_sb = {}
-            self.encrypted_w = {}
-            self.zkp1_dict = {}
-            self.zkp2_dict = {}
-            self.zkp3_dict = {}
-            self.zkp4_dict = {}
+            self.zkp_discretelog_dict = {}
+            self.zkp_dhtuple_dict = {}
+            self.zkp_range_dict = {}
+            self.zkp_sumRange_dict = {}
             return 1
         if (s == 'p' and self.cur_phase == 'c'):
             self.cur_phase = 'p'
@@ -31,34 +29,31 @@ class Ledger(object):
         else:
             return 0
 
-    def zkp1(self, pk, zkp_discretelog, uid):
+    def commit_zkp_discretelog(self, pk, zkp_discretelog, uid):
         if (self.cur_phase != 'c'):
             return 0
         self.pk_list[uid] = pk
-        self.zkp1_dict[uid] = zkp_discretelog
+        self.zkp_discretelog_dict[uid] = zkp_discretelog
         print("ledger: {} commited zkp for discrete log".format(uid))
 
-    def zkp2(self, h, h_list, encrypted_g1, encrypted_g2, zkp_dhtuple, uid):
+    def commit_zkp_dhtuple(self, h, h_list, encrypted_g1, encrypted_g2, zkp_dhtuple, uid):
         if (self.cur_phase != 'p'):
             return 0
         self.h[uid] = h
         self.h_list[uid] = h_list
         self.encrypted_g1[uid] = encrypted_g1
         self.encrypted_g2[uid] = encrypted_g2
-        self.zkp2_dict[uid] = zkp_dhtuple
+        self.zkp_dhtuple_dict[uid] = zkp_dhtuple
         print("ledger: {} commited zkp for dhtuple".format(uid))
 
-    def zkp3(self, encrypted_sb, zkp01, uid):
+    def commit_zkp_range(self, zkp_range, uid):
         if (self.cur_phase != 'p'):
             return 0
-        self.encrypted_sb[uid] = encrypted_sb
-        self.zkp3_dict[uid] = zkp01
-        print("ledger: {} commited zkp01".format(uid))
+        self.zkp_range_dict[uid] = zkp_range
+        print("ledger: {} commited zkp for range".format(uid))
 
-    def zkp4(self, encrypted_w, zkp_square, uid):
+    def commit_zkp_sumRange(self, zkp_sumRange, uid):
         if (self.cur_phase != 'p'):
             return 0
-        self.encrypted_w[uid] = encrypted_w
-        self.zkp4_dict[uid] = zkp_square
-        print("ledger: {} commited zkp square".format(uid))
-
+        self.zkp_sumRange_dict[uid] = zkp_sumRange
+        print("ledger: {} commited zkp for sum range".format(uid))
