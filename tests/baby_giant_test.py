@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# Utility functions
+# Used to generate figure 4a) in the paper. This script calculates the average
+# time to compute the discrete log using Shank's algorithm.  
 
 import random,time,csv
 from curveParams import G,order
