@@ -1,5 +1,4 @@
-This is the implementation for ece598 course project: Self-tallying Multi-party Secure Aggregation. 
-Originally forked from https://github.com/amiller/python-zk-proofs
+This repository contains the code for the paper - "Distributed and Secure ML with Self-tallying Multi-party Aggregation", presented at the NeurIPS 2018 Workshop on Privacy Preserving Machine Learning (https://ppml-workshop.github.io/ppml/).
 
 The project consists of:
 
@@ -13,4 +12,6 @@ Instruction:
 - Python Environment: Python 3.5.2
 - To run the test application, use command: python test.py
 
-
+Acknowledgments:
+https://github.com/j2kun/elliptic-curves-finite-fields
+https://github.com/amiller/python-zk-proofs
