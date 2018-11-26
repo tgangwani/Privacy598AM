@@ -13,5 +13,5 @@ Instruction:
 - To run the test application, use command: python test.py
 
 Acknowledgments:
-https://github.com/j2kun/elliptic-curves-finite-fields
-https://github.com/amiller/python-zk-proofs
+- https://github.com/j2kun/elliptic-curves-finite-fields
+- https://github.com/amiller/python-zk-proofs
