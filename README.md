@@ -1,4 +1,4 @@
-This repository contains the code for the paper - "Distributed and Secure ML with Self-tallying Multi-party Aggregation", presented at the NeurIPS 2018 Workshop on Privacy Preserving Machine Learning (https://ppml-workshop.github.io/ppml/).
+This repository contains the code for the paper - ["Distributed and Secure ML with Self-tallying Multi-party Aggregation"](https://arxiv.org/abs/1811.10296), presented at the NeurIPS Workshop on Privacy Preserving Machine Learning, [PPML 2018](https://ppml-workshop.github.io/ppml/).
 
 The project consists of:
 
